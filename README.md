@@ -33,7 +33,7 @@ How are we going to achieve both? With all the favorites we despise and love:
 5. To spice it up - probably a skill.md to ducktape and blackbox all of the above.
    Nobody should know how we got there ;)
 6. Dangerously skipping code inspection, architecture, measures to reduce blast radius;
-7. Garbage in -> garbage out. You spend one evening writing a CLI, the crappy will "wrappy" it in seconds
+7. Garbage in -> garbage out. You spend one evening writing a CLI, the crappy will "wrappy" it in seconds to make you happy!
 
 ## Installation
 
