@@ -110,7 +110,7 @@ groups:
 
 After calling `crpy interface examples/crpy_mock_devops/devops-tool.yaml`, the tool produces a tree of all available commands:
 
-```bash
+```text
 devops v0.3.0 — DevOps platform CLI — deploy, monitor, manage
 
 devops/
@@ -138,7 +138,7 @@ Use: crpy schema <tool> <group> for TypeScript interfaces
 Let's scope it with `crpy interface examples/crpy_mock_devops/devops-tool.yaml --scope examples/crpy_mock_devops/agent-scope.yaml`
 The outcome changes slightly:
 
-```bash
+```text
 devops v0.3.0 — DevOps platform CLI — deploy, monitor, manage
 
 devops/
@@ -159,7 +159,7 @@ Use: crpy schema <tool> <group> for TypeScript interfaces
 
 And when we drill down with `crpy schema examples/crpy_mock_devops/devops-tool.yaml deploy --scope examples/crpy_mock_devops/agent-scope.yaml`
 
-```bash
+```typescript
 // devops deploy — Manage deployments and releases
 
 // devops deploy create — Create a new deployment
@@ -225,7 +225,7 @@ What is achieved
 
 Let crpy work on non-crappy tools: `crpy interface examples/crpy_podman/podman.yaml`
 
-```bash
+```text
 podman v5.8.0 — Manage pods, containers and images
 
 podman/
@@ -252,7 +252,7 @@ podman/
 
 Make it scoped for the task `crpy interface examples/crpy_podman/podman.yaml --scope examples/crpy_podman/podman-scoped-example.yaml`
 
-```bash
+```text
 podman v5.8.0 — Manage pods, containers and images
 
 podman/
@@ -274,8 +274,7 @@ Use: crpy schema <tool> <group> for TypeScript interfaces
 
 And the schema discovery `crpy schema examples/crpy_podman/podman.yaml container --scope examples/crpy_podman/podman-scoped-example.yaml`
 
-```bash
-
+```typescript
 // podman container — Manage containers
 
 // podman container diff — Inspect changes to the container's file systems
