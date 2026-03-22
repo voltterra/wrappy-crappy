@@ -35,15 +35,12 @@ How are we going to achieve both? All the favorites we despise and love:
 6. Dangerously skipping code inspection, architecture, measures to reduce blast radius;
 7. Garbage in -> garbage out. You spend one evening writing a CLI, the crappy will "wrappy" it
 
-> Note: After this point, many content was generated with the help of ChatGPT or alike.
-> I did my best to fact check and proofread, but the latter is my weakest point.
-
 ## Introduction
 
 The tool traverses the target CLI built-in help and try to discover all possible paths to commands, command groups, subcommands, arguments, flags/parameters.
 It is not a reliable process (hence the thoughts about SKILLS.MD). Each tool has a unique help structure that may not generalize well to other tools' help pages.
 
-The output of this process is a tree-like structure stored in yaml. It will be later used to generate the target CLI help pages on the fly in supported formats.
+The output of this process is a tree-like structure stored in yaml. It will be later used to generate the target CLI help pages on the fly in a desired supported format.
 
 - Target Formats include(not all of them are available):
   - Tree of command groups with subcommands; args details as Typescript Interface
@@ -53,9 +50,10 @@ The output of this process is a tree-like structure stored in yaml. It will be l
 
 > Reminder: My original thought was "There are 3 help page formats supported: original (keep everything, remove disabled tools), json (take whatever is possible, represent it as json, remove disabled tools), tree, tree + typescript, tree + python"
 
-### Walk through
+### Process
 
-Example after "discovery" (available at `examples/crpy_mock_devops/devops-tool`):
+The tool has a discovery mode as a separate half-way backed script. I had only run it once before it broke, so you should trust me it was functional.
+Example after "broken discovery" (available at `examples/crpy_mock_devops/devops-tool`):
 
 ```yaml
 groups:
@@ -79,7 +77,7 @@ groups:
             }
 ```
 
-The tool produces a tree of all available commands:
+After calling `crpy interface examples/crpy_mock_devops/devops-tool.yaml`, the tool produces a tree of all available commands:
 
 ```bash
 devops v0.3.0 — DevOps platform CLI — deploy, monitor, manage
@@ -106,7 +104,8 @@ devops/
 Use: crpy schema <tool> <group> for TypeScript interfaces
 ```
 
-When the scoping feature kicks in, the outcome changes slightly:
+Let's scope it with `crpy interface examples/crpy_mock_devops/devops-tool.yaml --scope examples/crpy_mock_devops/agent-scope.yaml`
+The outcome changes slightly:
 
 ```bash
 devops v0.3.0 — DevOps platform CLI — deploy, monitor, manage
@@ -127,7 +126,7 @@ devops/
 Use: crpy schema <tool> <group> for TypeScript interfaces
 ```
 
-And when we drill down with `crpy schema deploy create`:
+And when we drill down with `crpy schema examples/crpy_mock_devops/devops-tool.yaml deploy --scope examples/crpy_mock_devops/agent-scope.yaml`
 
 ```bash
 // devops deploy — Manage deployments and releases
@@ -189,8 +188,90 @@ What is achieved
 1. Maybe it will converge to an MCP-like interface code generation tool, so your agent will end up importing "scoped" CLI-backed libraries.
 2. Claude doesn't need mcp_discovery tool with embeddings, regex and BM25 lookups?
 
+### More examples
+
+#### Proper tool: podman
+
+Let crpy work on non-crappy tools: `crpy interface examples/crpy_podman/podman.yaml`
+
+```bash
+podman v5.8.0 — Manage pods, containers and images
+
+podman/
+...
+├── _global/                Global flags available on all commands
+├── compose/                Run compose workloads via an external provider such as docker-compose or podman-compose
+│   ├── attach
+│   ├── build
+│   ├── commit
+│   ├── config
+│   ├── cp
+│   ├── create
+│   ├── down
+│   ├── events
+│   ├── exec
+│   ├── export
+│   ├── images
+│   ├── kill
+│   ├── logs
+│   ├── ls
+│   ├── pause
+...
+```
+
+Make it scoped for the task `crpy interface examples/crpy_podman/podman.yaml --scope examples/crpy_podman/podman-scoped-example.yaml`
+
+```bash
+podman v5.8.0 — Manage pods, containers and images
+
+podman/
+├── _global/                Global flags available on all commands
+│   └── _flags
+└── container/              Manage containers
+    ├── diff
+    ├── exists
+    ├── inspect
+    ├── list
+    ├── logs
+    ├── port
+    ├── ps
+    ├── stats
+    └── top
+
+Use: crpy schema <tool> <group> for TypeScript interfaces
+```
+
+And the schema discovery `crpy schema examples/crpy_podman/podman.yaml container --scope examples/crpy_podman/podman-scoped-example.yaml`
+
+```bash
+
+// podman container — Manage containers
+
+// podman container diff — Inspect changes to the container's file systems
+interface DiffInput {
+  format?: string;  // Change the output format (json)
+}
+
+// podman container exists — Check if a container exists in local storage
+interface ExistsInput {
+  external?: boolean;  // Check external storage containers as well as Podman containers
+}
+
+// podman container inspect — Display the configuration of a container
+interface InspectInput {
+  format?: string;  // FIXED: json
+  size?: boolean;  // Display total file size
+}
+...
+```
+
+## Important
+
+> Note: After this point, many content was generated with the help of ChatGPT or alike.
+> I did my best to fact check and proofread, but the latter is my weakest point.
+
 ## Disclaimer
 
-It may well be that all of the above have already been implemented. "But hey, who reads books nowadays?"
+It may well be that all of the above has already been implemented. "But hey, who reads books nowadays?"
 
 I might need a good name suggestion 😂
