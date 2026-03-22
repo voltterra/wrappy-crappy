@@ -159,7 +159,7 @@ Use: crpy schema <tool> <group> for TypeScript interfaces
 
 And when we drill down with `crpy schema examples/crpy_mock_devops/devops-tool.yaml deploy --scope examples/crpy_mock_devops/agent-scope.yaml`
 
-```bash
+```typescript
 // devops deploy — Manage deployments and releases
 
 // devops deploy create — Create a new deployment
@@ -274,8 +274,7 @@ Use: crpy schema <tool> <group> for TypeScript interfaces
 
 And the schema discovery `crpy schema examples/crpy_podman/podman.yaml container --scope examples/crpy_podman/podman-scoped-example.yaml`
 
-```bash
-
+```typescript
 // podman container — Manage containers
 
 // podman container diff — Inspect changes to the container's file systems
