@@ -17,15 +17,15 @@ import json
 import click
 from pathlib import Path
 
-from wrapper_crapper.loader import load_tool
-from wrapper_crapper.scope import ScopeConfig
-from wrapper_crapper.render import render_tree_root, render_ts_group, render_ts_command
-from wrapper_crapper.enforce import enforce_call, enforce_output, exec_wrapped
+from wrappy_crappy.loader import load_tool
+from wrappy_crappy.scope import ScopeConfig
+from wrappy_crappy.render import render_tree_root, render_ts_group, render_ts_command
+from wrappy_crappy.enforce import enforce_call, enforce_output, exec_wrapped
 
 
 @click.group()
 def cli():
-    """Wrapper Crapper — Keep your shit together."""
+    """Wrappy Crappy — Keep(s) your CLI shit together"""
     pass
 
 

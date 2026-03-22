@@ -17,8 +17,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-from wrapper_crapper.tool_def import ToolDef
-from wrapper_crapper.scope import ScopeConfig
+from wrappy_crappy.tool_def import ToolDef
+from wrappy_crappy.scope import ScopeConfig
 
 
 class ScopeViolation(Exception):

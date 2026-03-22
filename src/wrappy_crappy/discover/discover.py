@@ -8,7 +8,7 @@ The result is a YAML file compatible with ``loader.py`` / ``ToolDef``.
 
 Usage::
 
-    from wrapper_crapper.discover import discover_tool, dump_yaml
+    from wrappy_crappy.discover import discover_tool, dump_yaml
     tree = discover_tool("podman")
     print(dump_yaml(tree))
 """
@@ -910,7 +910,7 @@ def dump_yaml(tool: DiscoveredTool) -> str:
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print(
-            f"usage: python -m wrapper_crapper.discover <tool> [--output <file>]",
+            f"usage: python -m wrappy_crappy.discover <tool> [--output <file>]",
             file=sys.stderr,
         )
         sys.exit(1)

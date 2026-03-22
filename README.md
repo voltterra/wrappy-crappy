@@ -80,3 +80,5 @@ groups:
 ## Disclaimer
 
 It may well be that all of the above have already been implemented. "But hey, who reads books nowadays?"
+
+I might need a good name suggestion 😂

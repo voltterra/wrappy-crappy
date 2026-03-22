@@ -9,8 +9,8 @@ Pinned params show as fixed values. Hidden output fields disappear.
 The agent never learns what it can't use.
 """
 
-from wrapper_crapper.tool_def import Command, Group, Param, ToolDef
-from wrapper_crapper.scope import ScopeConfig
+from wrappy_crappy.tool_def import Command, Group, Param, ToolDef
+from wrappy_crappy.scope import ScopeConfig
 
 
 # ---------------------------------------------------------------------------

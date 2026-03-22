@@ -4,7 +4,7 @@ from pathlib import Path
 
 import yaml
 
-from wrapper_crapper.tool_def import Command, Group, OutputField, Param, ToolDef
+from wrappy_crappy.tool_def import Command, Group, OutputField, Param, ToolDef
 
 
 def load_tool(path: Path) -> ToolDef:
