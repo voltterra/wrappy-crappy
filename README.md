@@ -16,7 +16,7 @@ Then the news come that Google had released new agent first `googleworkspace` cl
 
 We shall see where it ends, but at least I'm happy I can reveal to the World the `wrappy crappy` project 💁
 
-## Author's Introduction
+## Description
 
 The tool is aimed to solve two unrelated yet surprisingly related goals:
 
@@ -24,7 +24,7 @@ The tool is aimed to solve two unrelated yet surprisingly related goals:
 2. Create a security perimeter and controls for general purpose CLIs.
 3. Optimize token counts and reduce context-window bloating.
 
-How are we going to achieve both? All the favorites we despise and love:
+How are we going to achieve both? With all the favorites we despise and love:
 
 1. Security over obscurity (it works surprisingly well here)
 2. Spawning shell subprocesses in python (yikes)
@@ -33,7 +33,38 @@ How are we going to achieve both? All the favorites we despise and love:
 5. To spice it up - probably a skill.md to ducktape and blackbox all of the above.
    Nobody should know how we got there ;)
 6. Dangerously skipping code inspection, architecture, measures to reduce blast radius;
-7. Garbage in -> garbage out. You spend one evening writing a CLI, the crappy will "wrappy" it
+7. Garbage in -> garbage out. You spend one evening writing a CLI, the crappy will "wrappy" it in seconds
+
+## Installation
+
+```bash
+# From source (requires uv or pip)
+git clone https://github.com/your-repo/wrappy-crappy.git
+cd wrappy-crappy
+pip install .
+
+# Or with uv
+uv pip install .
+```
+
+## Usage
+
+```bash
+# Show the tool interface tree
+crpy interface <tool.yaml>
+
+# Show the tool interface with scope restrictions
+crpy interface <tool.yaml> --scope <scope.yaml>
+
+# Show TypeScript schema for a command group
+crpy schema <tool.yaml> <group>
+
+# Show schema for a specific command
+crpy schema <tool.yaml> <group> <command>
+
+# Execute a wrapped command with scope enforcement
+crpy exec <tool.yaml> --scope <scope.yaml> <group> <command> --params '{"key": "value"}'
+```
 
 ## Introduction
 
@@ -270,8 +301,10 @@ interface InspectInput {
 > Note: After this point, many content was generated with the help of ChatGPT or alike.
 > I did my best to fact check and proofread, but the latter is my weakest point.
 
-## Disclaimer
+## Final thoughts
 
 It may well be that all of the above has already been implemented. "But hey, who reads books nowadays?"
 
 I might need a good name suggestion 😂
+
+I guess, happy wrapping everyone 🫶
