@@ -81,7 +81,7 @@ def apply_scope(tool: ToolDef, scope: ScopeConfig) -> ToolDef:
 # ---------------------------------------------------------------------------
 
 
-# FIXME: This is super fragile
+# FIXME: This is super fragile... not to mention ugly
 def render_tree_root(tool: ToolDef, scope: ScopeConfig | None = None) -> str:
     if scope:
         tool = apply_scope(tool, scope)
@@ -97,7 +97,7 @@ def render_tree_root(tool: ToolDef, scope: ScopeConfig | None = None) -> str:
             sub_prefix = "└── " if sub_last else "├── "
             lines.append(f"{child_prefix}{sub_prefix}{cmd.name}")
     lines.append("")
-    lines.append(f"Use: wc schema <tool> <group> for TypeScript interfaces")
+    lines.append(f"Use: crpy schema <tool> <group> for TypeScript interfaces")
     return "\n".join(lines)
 
 

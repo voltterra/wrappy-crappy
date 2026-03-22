@@ -1,15 +1,18 @@
 """Wrapper Crapper CLI — Keep your shit together.
 
 Discovery (what the agent sees):
-    wc help <tool.yaml> [--scope s.yaml]                 # tree: groups + commands
-    wc schema <tool.yaml> <group> [--scope s.yaml]       # TypeScript interfaces
-    wc schema <tool.yaml> <group> <cmd> [--scope s.yaml] # single command interface
+    crpy interface <tool.yaml>              [--scope s.yaml] # tree: groups + commands
+    crpy schema <tool.yaml> <group>         [--scope s.yaml] # Drill down with TypeScript interfaces
+    crpy schema <tool.yaml> <group> <cmd>     [--scope s.yaml] # single command interface
 
 Enforcement (what actually happens):
-    wc exec <tool.yaml> --scope s.yaml <group> <cmd> [--params '{}']  # wrapped call
+    crpy exec <tool.yaml> --scope s.yaml <group> <cmd> [--params '{}']  # wrapped call
 
 Scope management:
-    wc scope show|init|deny|allow|pin|unpin|hide <scope.yaml> ...
+    (BROKEN) crpy scope show|init|deny|allow|pin|unpin|hide <scope.yaml> ...
+
+Note:
+    Yaml format for scoping is not finalized
 """
 
 import json

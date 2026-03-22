@@ -45,7 +45,7 @@ It is not a reliable process (hence the thoughts about SKILLS.MD). Each tool has
 
 The output of this process is a tree-like structure stored in yaml. It will be later used to generate the target CLI help pages on the fly in supported formats.
 
-Example (available at `examples/crpy_mock_devops/devops-tool`):
+Example after "discovery" (available at `examples/crpy_mock_devops/devops-tool`):
 
 ```yaml
 groups:
@@ -74,6 +74,31 @@ groups:
   - TODO: Tree of command groups with subcommands; args details as Python Interface
   - TODO: Original + discovery and security constrains
   - TODO: JSON + discovery and security constrains
+
+The tool produces a tree of all available commands:
+
+```bash
+devops/
+├── deploy/                 Manage deployments and releases
+│   ├── create
+│   ├── rollback
+│   ├── list
+│   ├── promote
+│   └── destroy
+├── secrets/                Manage secrets and credentials
+│   ├── set
+│   ├── get
+│   ├── list
+│   ├── rotate
+│   └── delete
+└── monitor/                Monitoring, alerts, and observability
+    ├── status
+    ├── logs
+    ├── alert
+    └── metrics
+
+Use: crpy schema <tool> <group> for TypeScript interfaces
+```
 
 > Reminder: My original thought was "There are 3 help page formats supported: original (keep everything, remove disabled tools), json (take whatever is possible, represent it as json, remove disabled tools), tree, tree + typescript, tree + python"
 
