@@ -45,6 +45,16 @@ It is not a reliable process (hence the thoughts about SKILLS.MD). Each tool has
 
 The output of this process is a tree-like structure stored in yaml. It will be later used to generate the target CLI help pages on the fly in supported formats.
 
+- Target Formats include(not all of them are available):
+  - Tree of command groups with subcommands; args details as Typescript Interface
+  - TODO: Tree of command groups with subcommands; args details as Python Interface
+  - TODO: Original + discovery and security constrains
+  - TODO: JSON + discovery and security constrains
+
+> Reminder: My original thought was "There are 3 help page formats supported: original (keep everything, remove disabled tools), json (take whatever is possible, represent it as json, remove disabled tools), tree, tree + typescript, tree + python"
+
+### Walk through
+
 Example after "discovery" (available at `examples/crpy_mock_devops/devops-tool`):
 
 ```yaml
@@ -69,15 +79,11 @@ groups:
             }
 ```
 
-- Target Formats include(not all of them are available):
-  - Tree of command groups with subcommands; args details as Typescript Interface
-  - TODO: Tree of command groups with subcommands; args details as Python Interface
-  - TODO: Original + discovery and security constrains
-  - TODO: JSON + discovery and security constrains
-
 The tool produces a tree of all available commands:
 
 ```bash
+devops v0.3.0 — DevOps platform CLI — deploy, monitor, manage
+
 devops/
 ├── deploy/                 Manage deployments and releases
 │   ├── create
@@ -100,7 +106,88 @@ devops/
 Use: crpy schema <tool> <group> for TypeScript interfaces
 ```
 
-> Reminder: My original thought was "There are 3 help page formats supported: original (keep everything, remove disabled tools), json (take whatever is possible, represent it as json, remove disabled tools), tree, tree + typescript, tree + python"
+When the scoping feature kicks in, the outcome changes slightly:
+
+```bash
+devops v0.3.0 — DevOps platform CLI — deploy, monitor, manage
+
+devops/
+├── deploy/                 Manage deployments and releases
+│   ├── create
+│   ├── list
+│   └── promote
+├── secrets/                Manage secrets and credentials
+│   └── list
+└── monitor/                Monitoring, alerts, and observability
+    ├── status
+    ├── logs
+    ├── alert
+    └── metrics
+
+Use: crpy schema <tool> <group> for TypeScript interfaces
+```
+
+And when we drill down with `crpy schema deploy create`:
+
+```bash
+// devops deploy — Manage deployments and releases
+
+// devops deploy create — Create a new deployment
+interface CreateInput {
+  service: string;  // Service name
+  image: string;  // Container image:tag
+  env?: string;  // FIXED: staging
+  replicas?: number;  // FIXED: 2
+  cpu?: string;  // FIXED: 250m
+  memory?: string;  // FIXED: 256Mi
+  timeout?: number;  // Rollout timeout seconds
+  dry_run?: boolean;  // Preview without applying
+}
+interface CreateOutput {
+  deployment_id: string;  // Created deployment ID
+  status: string;  // Deployment status
+  url: string;  // Service endpoint URL
+  replicas_ready: number;  // Ready replica count
+}
+
+// devops deploy list — List deployments for a service
+interface ListInput {
+  service?: string;  // Service name
+  env?: "staging" | "production" | "canary";  // Filter by environment
+  status?: "running" | "failed" | "pending";  // Filter by status
+  limit?: number;  // Max results
+}
+interface ListOutput {
+  deployments: any[];  // Array of deployment objects
+  total: number;  // Total deployments found
+}
+
+// devops deploy promote — Promote deployment from staging to production
+interface PromoteInput {
+  deployment_id: string;  // Staging deployment ID
+  canary_pct?: number;  // FIXED: 5
+  auto_promote?: boolean;  // Auto-promote after health check
+}
+interface PromoteOutput {
+  production_id: string;  // Production deployment ID
+  canary_status: string;  // Canary health status
+}
+```
+
+### Outcome
+
+What is achieved
+
+1. Scoped tools exposure - smaller context window for tool discovery.
+2. When an agent needs to uncover more details, it descents to `deploy` schema.
+3. The schema itself is rendered as TypeScript interfaces (not structured very intelligently though. Will be fixed).
+4. "FIXED" parameters are frozen. An agent won't be able to change them and delete all your google drive files, or start deleting all your emails.
+5. Once `crpy` reaches some maturity, this will be one time operation to create a fixed "wrapper" - think a command a la `crpy-devops`, `crpy-openclaw`, `crpy-gws` or whichever CLI you want to expose to an agent.
+
+### Where it could go
+
+1. Maybe it will converge to an MCP-like interface code generation tool, so your agent will end up importing "scoped" CLI-backed libraries.
+2. Claude doesn't need mcp_discovery tool with embeddings, regex and BM25 lookups?
 
 ## Disclaimer
 
