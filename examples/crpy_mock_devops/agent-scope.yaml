@@ -1,0 +1,26 @@
+# Scope: Junior CI Agent
+# Can deploy to staging only, read-only monitoring, no secrets access, no destroy
+
+deny:
+  - deploy.destroy
+  - deploy.rollback
+  - secrets.get
+  - secrets.set
+  - secrets.delete
+  - secrets.rotate
+
+pin:
+  deploy.create:
+    env: staging
+    replicas: "2"
+    cpu: "250m"
+    memory: "256Mi"
+  deploy.promote:
+    canary_pct: "5"
+  monitor.alert:
+    severity: warning
+    channel: slack
+
+hide_output:
+  secrets.list:
+    - secrets

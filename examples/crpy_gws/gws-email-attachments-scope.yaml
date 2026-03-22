@@ -1,0 +1,190 @@
+# Scope: Email reader + Drive attachment saver
+#
+# Workflow: check emails, read messages, download attachments, save to Drive.
+# Everything else is locked down — no sending, no deleting, no label changes,
+# no settings mutations, no shared-drive admin, no calendar/sheets/etc.
+
+deny:
+  # --- Gmail: block all write/destructive operations ---
+  - gmail.users.messages.send
+  - gmail.users.messages.delete
+  - gmail.users.messages.batchDelete
+  - gmail.users.messages.batchModify
+  - gmail.users.messages.modify
+  - gmail.users.messages.trash
+  - gmail.users.messages.import
+  - gmail.users.messages.insert
+  - gmail.users.drafts.*
+  - gmail.users.labels.create
+  - gmail.users.labels.delete
+  - gmail.users.labels.patch
+  - gmail.users.labels.update
+  - gmail.users.threads.delete
+  - gmail.users.threads.modify
+  - gmail.users.threads.trash
+  - gmail.users.stop
+  - gmail.users.watch
+  # Gmail settings — all sub-resources
+  - gmail.users.settings.*
+  - gmail.users.settings.cse.identities.*
+  - gmail.users.settings.cse.keypairs.*
+  - gmail.users.settings.delegates.*
+  - gmail.users.settings.filters.*
+  - gmail.users.settings.forwardingAddresses.*
+  - gmail.users.settings.sendAs.*
+  - gmail.users.settings.sendAs.smimeInfo.*
+
+  # --- Drive: only allow create (upload), get, download, list ---
+  - drive.files.delete
+  - drive.files.emptyTrash
+  - drive.files.copy
+  - drive.files.update
+  - drive.files.watch
+  - drive.files.modifyLabels
+  - drive.files.listLabels
+  - drive.files.export
+  - drive.files.generateIds
+  - drive.permissions.*
+  - drive.drives.*
+  - drive.teamdrives.*
+  - drive.channels.*
+  - drive.changes.*
+  - drive.comments.*
+  - drive.replies.*
+  - drive.revisions.*
+  - drive.accessproposals.*
+  - drive.approvals.*
+  - drive.apps.*
+  - drive.operations.*
+
+  # --- Block all non-gmail, non-drive services ---
+  - sheets.spreadsheets.*
+  - sheets.spreadsheets.developerMetadata.*
+  - sheets.spreadsheets.sheets.*
+  - sheets.spreadsheets.values.*
+  - calendar.acl.*
+  - calendar.calendarList.*
+  - calendar.calendars.*
+  - calendar.channels.*
+  - calendar.colors.*
+  - calendar.events.*
+  - calendar.freebusy.*
+  - calendar.settings.*
+  - admin-reports.activities.*
+  - admin-reports.channels.*
+  - admin-reports.customerUsageReports.*
+  - admin-reports.entityUsageReports.*
+  - admin-reports.userUsageReport.*
+  - docs.documents.*
+  - slides.presentations.*
+  - slides.presentations.pages.*
+  - tasks.tasklists.*
+  - tasks.tasks.*
+  - people.contactGroups.*
+  - people.contactGroups.members.*
+  - people.otherContacts.*
+  - people.people.*
+  - people.people.connections.*
+  - chat.customEmojis.*
+  - chat.media.*
+  - chat.spaces.*
+  - chat.spaces.members.*
+  - chat.spaces.messages.*
+  - chat.spaces.messages.attachments.*
+  - chat.spaces.messages.reactions.*
+  - chat.spaces.spaceEvents.*
+  - chat.users.spaces.*
+  - chat.users.spaces.spaceNotificationSetting.*
+  - chat.users.spaces.threads.*
+  - classroom.courses.*
+  - classroom.courses.aliases.*
+  - classroom.courses.announcements.*
+  - classroom.courses.announcements.addOnAttachments.*
+  - classroom.courses.courseWork.*
+  - classroom.courses.courseWork.addOnAttachments.*
+  - classroom.courses.courseWork.addOnAttachments.studentSubmissions.*
+  - classroom.courses.courseWork.rubrics.*
+  - classroom.courses.courseWork.studentSubmissions.*
+  - classroom.courses.courseWorkMaterials.*
+  - classroom.courses.courseWorkMaterials.addOnAttachments.*
+  - classroom.courses.posts.*
+  - classroom.courses.posts.addOnAttachments.*
+  - classroom.courses.posts.addOnAttachments.studentSubmissions.*
+  - classroom.courses.studentGroups.*
+  - classroom.courses.studentGroups.studentGroupMembers.*
+  - classroom.courses.students.*
+  - classroom.courses.teachers.*
+  - classroom.courses.topics.*
+  - classroom.invitations.*
+  - classroom.registrations.*
+  - classroom.userProfiles.*
+  - classroom.userProfiles.guardianInvitations.*
+  - classroom.userProfiles.guardians.*
+  - forms.forms.*
+  - forms.forms.responses.*
+  - forms.forms.watches.*
+  - keep.media.*
+  - keep.notes.*
+  - keep.notes.permissions.*
+  - meet.conferenceRecords.*
+  - meet.conferenceRecords.participants.*
+  - meet.conferenceRecords.participants.participantSessions.*
+  - meet.conferenceRecords.recordings.*
+  - meet.conferenceRecords.smartNotes.*
+  - meet.conferenceRecords.transcripts.*
+  - meet.conferenceRecords.transcripts.entries.*
+  - meet.spaces.*
+  - events.message.*
+  - events.operations.*
+  - events.subscriptions.*
+  - events.tasks.*
+  - events.tasks.pushNotificationConfigs.*
+
+pin:
+  # Always query as "me" — prevent the agent from reading other users' mail
+  gmail.users.getProfile:
+    userId: "me"
+  gmail.users.messages.list:
+    userId: "me"
+    maxResults: "25"
+  gmail.users.messages.get:
+    userId: "me"
+  gmail.users.messages.attachments.get:
+    userId: "me"
+  gmail.users.threads.list:
+    userId: "me"
+    maxResults: "25"
+  gmail.users.threads.get:
+    userId: "me"
+  gmail.users.labels.list:
+    userId: "me"
+  gmail.users.labels.get:
+    userId: "me"
+  gmail.users.history.list:
+    userId: "me"
+
+  # Cap Drive listing page size
+  drive.files.list:
+    pageSize: "50"
+
+hide_output:
+  # Strip internal/noisy fields from Drive file responses
+  drive.files.create:
+    - permissionIds
+    - permissions
+    - owners
+    - sharingUser
+    - capabilities
+    - linkShareMetadata
+    - resourceKey
+  drive.files.get:
+    - permissionIds
+    - permissions
+    - owners
+    - sharingUser
+    - capabilities
+    - linkShareMetadata
+    - resourceKey
+  drive.files.list:
+    - incompleteSearch
+    - kind
