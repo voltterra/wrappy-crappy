@@ -1,0 +1,82 @@
+# Scope: Container status checker (read-only)
+#
+# Workflow: list running containers by name, inspect them, check logs and stats.
+# No creating, running, stopping, deleting, or modifying anything.
+# No access to images, volumes, networks, pods, secrets, or machine management.
+
+deny:
+  # --- Block everything except container group ---
+  - artifact.*
+  - compose.*
+  - farm.*
+  - generate.*
+  - image.*
+  - kube.*
+  - machine.*
+  - machine.os.*
+  - manifest.*
+  - network.*
+  - pod.*
+  - quadlet.*
+  - secret.*
+  - system.*
+  - system.connection.*
+  - volume.*
+
+  # --- Block all write/destructive container operations ---
+  - container.create
+  - container.run
+  - container.start
+  - container.stop
+  - container.restart
+  - container.kill
+  - container.rm
+  - container.prune
+  - container.rename
+  - container.update
+  - container.pause
+  - container.unpause
+  - container.clone
+  - container.commit
+  - container.cp
+  - container.exec
+  - container.export
+  - container.init
+  - container.checkpoint
+  - container.restore
+  - container.wait
+  - container.attach
+
+  # --- Block top-level aliases of write commands ---
+  - _root.*
+
+pin:
+  # Default to showing only running containers
+  container.list:
+    filter: "status=running"
+    format: "json"
+  container.ps:
+    filter: "status=running"
+    format: "json"
+
+  # JSON output for inspect — structured and parseable
+  container.inspect:
+    format: "json"
+
+  # Cap log tail to prevent unbounded reads
+  container.logs:
+    tail: "200"
+
+  # Non-streaming stats snapshot
+  container.stats:
+    no-stream: "true"
+    format: "json"
+
+hide_output:
+  # container.inspect returns a massive blob — hide security-sensitive internals
+  container.inspect:
+    - HostConfig
+    - GraphDriver
+    - Mounts
+    - NetworkSettings
+    - Config

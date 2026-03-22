@@ -1,2 +1,1 @@
-def main() -> None:
-    print("Hello from wrappy-crappy!")
+"""Wrapper Crapper — Keep your shit together."""

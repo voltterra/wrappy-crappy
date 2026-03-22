@@ -1,0 +1,181 @@
+name: devops
+version: "0.3.0"
+description: "DevOps platform CLI — deploy, monitor, manage"
+
+groups:
+  - name: deploy
+    description: "Manage deployments and releases"
+    commands:
+      - name: create
+        description: "Create a new deployment"
+        params:
+          - {name: service, type: STR, description: "Service name", required: true}
+          - {name: image, type: STR, description: "Container image:tag", required: true}
+          - {name: env, type: STR, description: "Target environment", required: true, choices: [staging, production, canary]}
+          - {name: replicas, type: INT, description: "Number of replicas", default: "3"}
+          - {name: cpu, type: STR, description: "CPU limit", default: "500m"}
+          - {name: memory, type: STR, description: "Memory limit", default: "512Mi"}
+          - {name: timeout, type: INT, description: "Rollout timeout seconds", default: "300"}
+          - {name: dry_run, type: BOOL, description: "Preview without applying", is_flag: true}
+        outputs:
+          - {name: deployment_id, type: STR, description: "Created deployment ID"}
+          - {name: status, type: STR, description: "Deployment status"}
+          - {name: url, type: STR, description: "Service endpoint URL"}
+          - {name: replicas_ready, type: INT, description: "Ready replica count"}
+
+      - name: rollback
+        description: "Rollback to a previous revision"
+        params:
+          - {name: service, type: STR, description: "Service name", required: true}
+          - {name: env, type: STR, description: "Target environment", required: true, choices: [staging, production, canary]}
+          - {name: revision, type: INT, description: "Target revision number"}
+          - {name: force, type: BOOL, description: "Skip health checks", is_flag: true}
+        outputs:
+          - {name: deployment_id, type: STR, description: "Rollback deployment ID"}
+          - {name: from_revision, type: INT, description: "Previous revision"}
+          - {name: to_revision, type: INT, description: "Rolled-back-to revision"}
+
+      - name: list
+        description: "List deployments for a service"
+        params:
+          - {name: service, type: STR, description: "Service name"}
+          - {name: env, type: STR, description: "Filter by environment", choices: [staging, production, canary]}
+          - {name: status, type: STR, description: "Filter by status", choices: [running, failed, pending]}
+          - {name: limit, type: INT, description: "Max results", default: "20"}
+        outputs:
+          - {name: deployments, type: LIST, description: "Array of deployment objects"}
+          - {name: total, type: INT, description: "Total deployments found"}
+
+      - name: promote
+        description: "Promote deployment from staging to production"
+        params:
+          - {name: deployment_id, type: STR, description: "Staging deployment ID", required: true}
+          - {name: canary_pct, type: INT, description: "Canary traffic percentage", default: "10"}
+          - {name: auto_promote, type: BOOL, description: "Auto-promote after health check", is_flag: true}
+        outputs:
+          - {name: production_id, type: STR, description: "Production deployment ID"}
+          - {name: canary_status, type: STR, description: "Canary health status"}
+
+      - name: destroy
+        description: "Destroy a deployment permanently"
+        params:
+          - {name: service, type: STR, description: "Service name", required: true}
+          - {name: env, type: STR, description: "Target environment", required: true, choices: [staging, production, canary]}
+          - {name: force, type: BOOL, description: "Skip confirmation", is_flag: true}
+          - {name: purge_data, type: BOOL, description: "Also delete persistent volumes", is_flag: true}
+        outputs:
+          - {name: destroyed, type: STR, description: "Destroyed deployment ID"}
+          - {name: data_purged, type: BOOL, description: "Whether data was purged"}
+
+  - name: secrets
+    description: "Manage secrets and credentials"
+    commands:
+      - name: set
+        description: "Create or update a secret"
+        params:
+          - {name: name, type: STR, description: "Secret name", required: true}
+          - {name: value, type: STR, description: "Secret value", required: true}
+          - {name: env, type: STR, description: "Target environment", required: true, choices: [staging, production, all]}
+          - {name: encrypt, type: BOOL, description: "Encrypt at rest", is_flag: true, default: "true"}
+        outputs:
+          - {name: secret_id, type: STR, description: "Secret identifier"}
+          - {name: version, type: INT, description: "Secret version number"}
+          - {name: encrypted, type: BOOL, description: "Whether encrypted"}
+
+      - name: get
+        description: "Retrieve a secret value"
+        params:
+          - {name: name, type: STR, description: "Secret name", required: true}
+          - {name: env, type: STR, description: "Target environment", required: true, choices: [staging, production]}
+          - {name: version, type: INT, description: "Specific version"}
+          - {name: decrypt, type: BOOL, description: "Return decrypted value", is_flag: true}
+        outputs:
+          - {name: name, type: STR, description: "Secret name"}
+          - {name: value, type: STR, description: "Secret value (masked unless --decrypt)"}
+          - {name: version, type: INT, description: "Version number"}
+          - {name: created, type: STR, description: "Created timestamp"}
+
+      - name: list
+        description: "List all secrets"
+        params:
+          - {name: env, type: STR, description: "Filter by environment", choices: [staging, production, all]}
+          - {name: prefix, type: STR, description: "Filter by name prefix"}
+        outputs:
+          - {name: secrets, type: LIST, description: "Array of secret metadata"}
+          - {name: total, type: INT, description: "Total secrets"}
+
+      - name: rotate
+        description: "Rotate a secret and redeploy"
+        params:
+          - {name: name, type: STR, description: "Secret name", required: true}
+          - {name: env, type: STR, description: "Target environment", required: true, choices: [staging, production, all]}
+          - {name: redeploy, type: BOOL, description: "Auto-redeploy affected services", is_flag: true}
+        outputs:
+          - {name: old_version, type: INT, description: "Previous version"}
+          - {name: new_version, type: INT, description: "New version"}
+          - {name: redeployed, type: LIST, description: "Services redeployed"}
+
+      - name: delete
+        description: "Permanently delete a secret"
+        params:
+          - {name: name, type: STR, description: "Secret name", required: true}
+          - {name: env, type: STR, description: "Target environment", required: true, choices: [staging, production, all]}
+          - {name: all_versions, type: BOOL, description: "Delete all versions", is_flag: true}
+        outputs:
+          - {name: deleted, type: STR, description: "Deleted secret name"}
+          - {name: versions_removed, type: INT, description: "Number of versions removed"}
+
+  - name: monitor
+    description: "Monitoring, alerts, and observability"
+    commands:
+      - name: status
+        description: "Get service health status"
+        params:
+          - {name: service, type: STR, description: "Service name", required: true}
+          - {name: env, type: STR, description: "Environment", choices: [staging, production]}
+          - {name: verbose, type: BOOL, description: "Include pod-level detail", is_flag: true}
+        outputs:
+          - {name: service, type: STR, description: "Service name"}
+          - {name: status, type: STR, description: "Overall health status"}
+          - {name: uptime, type: STR, description: "Uptime duration"}
+          - {name: replicas, type: STR, description: "Ready/total replicas"}
+          - {name: cpu_usage, type: STR, description: "Current CPU usage"}
+          - {name: memory_usage, type: STR, description: "Current memory usage"}
+
+      - name: logs
+        description: "Stream or fetch service logs"
+        params:
+          - {name: service, type: STR, description: "Service name", required: true}
+          - {name: env, type: STR, description: "Environment", choices: [staging, production]}
+          - {name: tail, type: INT, description: "Number of lines", default: "100"}
+          - {name: since, type: STR, description: "Start time (e.g. 1h, 30m)"}
+          - {name: grep, type: STR, description: "Filter pattern"}
+          - {name: follow, type: BOOL, description: "Stream live", is_flag: true}
+        outputs:
+          - {name: lines, type: LIST, description: "Log lines"}
+          - {name: count, type: INT, description: "Total lines returned"}
+
+      - name: alert
+        description: "Create or manage alerts"
+        params:
+          - {name: service, type: STR, description: "Service name", required: true}
+          - {name: metric, type: STR, description: "Metric to alert on", required: true, choices: [cpu, memory, latency, error_rate, custom]}
+          - {name: threshold, type: STR, description: "Threshold value", required: true}
+          - {name: channel, type: STR, description: "Notification channel", choices: [slack, pagerduty, email]}
+          - {name: severity, type: STR, description: "Alert severity", choices: [critical, warning, info], default: "warning"}
+        outputs:
+          - {name: alert_id, type: STR, description: "Created alert ID"}
+          - {name: status, type: STR, description: "Alert status"}
+
+      - name: metrics
+        description: "Query service metrics"
+        params:
+          - {name: service, type: STR, description: "Service name", required: true}
+          - {name: metric, type: STR, description: "Metric name", required: true}
+          - {name: period, type: STR, description: "Time period", default: "1h"}
+          - {name: resolution, type: STR, description: "Data resolution", default: "1m"}
+        outputs:
+          - {name: datapoints, type: LIST, description: "Metric datapoints"}
+          - {name: avg, type: NUMBER, description: "Average value"}
+          - {name: max, type: NUMBER, description: "Maximum value"}
+          - {name: p99, type: NUMBER, description: "99th percentile"}
