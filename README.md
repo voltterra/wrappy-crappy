@@ -14,7 +14,7 @@ Wasn't it a corner stone of UNIX philosophy?
 
 Then the news come that Google had released new agent first `googleworkspace` cli tool... So I recalled Frege once again, sweep(flip) the table clear and started writing this tool.
 
-We shall see where it ends, but at least I'm happy I can reveal to the World the `wrappy crappy` project 💁
+We shall see where it ends, but at least I'm happy I can reveal to the World the `wrappy-crappy` project 💁
 
 ## Description
 
